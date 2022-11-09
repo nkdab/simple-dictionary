@@ -1,24 +1,31 @@
 <script setup>
-import { computed, ref } from "vue";
+import { ref } from "vue";
 import fuzzySort from "fuzzysort";
 import dictionary from "@/constants/dictionary";
 import Autocomplete from "vue3-autocomplete"
 
 const selected = ref(null);
-const query = ref("");
+const results = ref([])
+const autocomplete = ref(null)
 
-const results = computed(() => {
-  return fuzzySort
-    .go(query.value, dictionary, { keys: ["ru", "en", "other"] })
+const search = (val) => {
+  results.value = fuzzySort
+    .go(val, dictionary, { keys: ["ru", "en", "other"] })
     .map((i) => i.obj);
-});
+};
+const select = (val) => {
+  selected.value = val;
+  autocomplete.value.autocompleteRef.blur();
+}
 </script>
 
 <template>
   <main class="content">
     <Autocomplete
-      @input="query = $event"
-      @onSelect="selected = $event"
+      ref="autocomplete"
+      @input="search"
+      @change="search"
+      @onSelect="select"
       :display-item="(item) => item.en + ' / ' + item.ru"
       :results="results"
       :input-class="['text-black w-full rounded']"
