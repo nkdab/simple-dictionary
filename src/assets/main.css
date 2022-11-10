@@ -3,5 +3,17 @@
 @tailwind utilities;
 
 body {
-    @apply bg-gray-800 p-4 text-amber-50
+    @apply bg-gray-800 p-0 text-amber-50
+}
+
+/*Animations*/
+.list-enter-active,
+.list-leave-active {
+    transition: all 0.5s ease-in-out;
+}
+
+.list-enter-from,
+.list-leave-to {
+    opacity: 0;
+    transform: translateX(30px);
 }

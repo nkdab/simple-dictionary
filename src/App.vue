@@ -1,57 +1,52 @@
 <script setup>
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import fuzzySort from "fuzzysort";
 import dictionary from "@/constants/dictionary";
-import Autocomplete from "vue3-autocomplete"
 
-const selected = ref(null);
-const results = ref([])
-const autocomplete = ref(null)
+const query = ref("");
 
-const search = (val) => {
-  results.value = fuzzySort
-    .go(val, dictionary, { keys: ["ru", "en", "other"] })
-    .map((i) => i.obj);
-};
-const select = (val) => {
-  selected.value = val;
-  autocomplete.value.autocompleteRef.blur();
-}
+const results = computed(() => {
+  return fuzzySort.go(query.value, dictionary, {
+    keys: ["ru", "en", "other"],
+    threshold: -10000,
+  });
+});
 </script>
 
 <template>
   <main class="content">
-    <Autocomplete
-      ref="autocomplete"
-      @input="search"
-      @change="search"
-      @onSelect="select"
-      :display-item="(item) => item.en + ' / ' + item.ru"
-      :results="results"
-      :input-class="['text-black w-full rounded']"
-      :results-container-class="['absolute bg-white text-black']"
-      :results-item-class="['cursor-pointer hover:bg-gray-100']"
-    />
-    <div class="results mt-4 text-gray-900 p-2 bg-orange-200 w-full">
+    <div class="fixed h-20 w-full flex items-center justify-center bg-gray-800">
+      <input type="text" v-model="query" class="text-black w-11/12" />
+    </div>
+    <div class="text-gray-900 pt-20">
       <div
-        v-if="selected && selected.en"
+        v-if="results.length"
+        class="flex flex-col items-center justify-center"
       >
-        <div v-if="selected.ru">
-          <h1 class="font-medium text-lg">Русский</h1>
-          <p>{{ selected.ru }} {{ selected.acronym && `(${selected.acronym})` }}</p>
-        </div>
-        <div>
-          <div class="w-full bg-gray-500 h-[1px] my-4"></div>
-          <h1 class="text-lg font-medium">English</h1>
-          <p>{{ selected.en }}</p>
-        </div>
-        <div v-if="selected.other">
-          <div class="w-full bg-gray-500 h-[1px] my-4"></div>
-          <h1 class="text-lg font-medium">Другое</h1>
-          <p>{{ selected.other }}</p>
-        </div>
+        <transition-group name="list">
+          <div
+            v-for="(selected, idx) in results"
+            :key="selected.obj.en + idx"
+            class="bg-orange-200 w-11/12 mt-3 p-2"
+          >
+            <div v-if="selected.obj.ru">
+              <p class="font-medium text-lg">
+                {{ selected.obj.ru }}
+                {{ selected.acronym && `(${selected.acronym})` }}
+              </p>
+            </div>
+            <div>
+              <div class="w-full bg-gray-500 h-[1px] my-4"></div>
+              <p class="font-medium text-lg">{{ selected.obj.en }}</p>
+            </div>
+            <div v-if="selected.obj.other">
+              <div class="w-full bg-gray-500 h-[1px] my-4"></div>
+              <p class="font-medium text-lg">{{ selected.obj.other }}</p>
+            </div>
+          </div>
+        </transition-group>
       </div>
-      <div v-else class="text-center">Ничего не найдено...</div>
+      <div v-else class="text-center text-gray-400">Ничего не найдено...</div>
     </div>
   </main>
 </template>
