@@ -23,28 +23,26 @@ const results = computed(() => {
         v-if="results.length"
         class="flex flex-col items-center justify-center"
       >
-        <transition-group name="list">
-          <div
-            v-for="(selected, idx) in results"
-            :key="selected.obj.en + idx"
-            class="bg-orange-200 w-11/12 mt-3 p-2"
-          >
-            <div v-if="selected.obj.ru">
-              <p class="font-medium text-lg">
-                {{ selected.obj.ru }}
-                {{ selected.acronym && `(${selected.acronym})` }}
-              </p>
-            </div>
-            <div>
-              <div class="w-full bg-gray-500 h-[1px] my-4"></div>
-              <p class="font-medium text-lg">{{ selected.obj.en }}</p>
-            </div>
-            <div v-if="selected.obj.other">
-              <div class="w-full bg-gray-500 h-[1px] my-4"></div>
-              <p class="font-medium text-lg">{{ selected.obj.other }}</p>
-            </div>
+        <div
+          v-for="(selected, idx) in results"
+          :key="selected.obj.en + idx"
+          class="bg-orange-200 w-11/12 mt-3 p-2"
+        >
+          <div v-if="selected.obj.ru">
+            <p class="font-medium text-lg">
+              {{ selected.obj.ru }}
+              {{ selected.acronym && `(${selected.acronym})` }}
+            </p>
           </div>
-        </transition-group>
+          <div>
+            <div class="w-full bg-gray-500 h-[1px] my-4"></div>
+            <p class="font-medium text-lg">{{ selected.obj.en }}</p>
+          </div>
+          <div v-if="selected.obj.other">
+            <div class="w-full bg-gray-500 h-[1px] my-4"></div>
+            <p class="font-medium text-lg">{{ selected.obj.other }}</p>
+          </div>
+        </div>
       </div>
       <div v-else class="text-center text-gray-400">Ничего не найдено...</div>
     </div>
