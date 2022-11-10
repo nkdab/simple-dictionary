@@ -1,22 +1,28 @@
 <script setup>
-import { computed, ref } from "vue";
+import { ref } from "vue";
 import fuzzySort from "fuzzysort";
 import dictionary from "@/constants/dictionary";
 
-const query = ref("");
+const results = ref([]);
 
-const results = computed(() => {
-  return fuzzySort.go(query.value, dictionary, {
+const search = (e) => {
+  const val = e.target.value;
+  results.value = fuzzySort.go(val, dictionary, {
     keys: ["ru", "en", "other"],
     threshold: -10000,
   });
-});
+};
 </script>
 
 <template>
   <main class="content">
     <div class="fixed h-20 w-full flex items-center justify-center bg-gray-800">
-      <input type="text" v-model="query" class="text-black w-11/12" />
+      <input
+        type="text"
+        @input="search"
+        @change="search"
+        class="text-black w-11/12"
+      />
     </div>
     <div class="text-gray-900 pt-20">
       <div
